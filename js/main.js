@@ -1,3 +1,6 @@
+//google maps api: 
+//AIzaSyBkDHFwgql51xl2AbS91Kp3Q_hdc4oU3lw
+
 let restaurants,
   neighborhoods,
   cuisines
