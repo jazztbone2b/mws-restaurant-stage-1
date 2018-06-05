@@ -53,10 +53,11 @@ nav {
   width: 100%;
   height: 80px;
   background-color: #252831;
-  text-align:center;
+  text-align: center;
 }
 nav h1 {
   margin: auto;
+  padding-top: 10px;
 }
 nav h1 a {
   color: #fff;
@@ -106,9 +107,9 @@ nav h1 a {
 /* ====================== Restaurant Filtering ====================== */
 .filter-options {
   width: 100%;
-  height: 50px;
+  display: block;
+  text-align: center;
   background-color: #3397DB;
-  align-items: center;
 }
 .filter-options h2 {
   color: white;
@@ -116,6 +117,7 @@ nav h1 a {
   font-weight: normal;
   line-height: 1;
   margin: 0 20px;
+  padding-top: 10px;
 }
 .filter-options select {
   background-color: white;
@@ -131,6 +133,9 @@ nav h1 a {
 
 /* ====================== Restaurant Listing ====================== */
 #restaurants-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   background-color: #f3f3f3;
   list-style: outside none none;
   margin: 0;
@@ -181,7 +186,34 @@ nav h1 a {
   text-decoration: none;
   text-transform: uppercase;
 }
+/* Set a Breakpoint for 500px - 757px, then add a seperate CSS file and link
+it in my HTML */
+@media screen and (min-width: 500px) and (max-width: 757px){
+  #restaurants-list{
+    padding: 15 7 30;
+  }
+  #restaurants-list li{
+    min-height: 200px;
+  }
+  #restaurants-list .restaurant-img{
+    min-height: 120px;
+  }
+}
+/* Set a Breakpoint for max-width: 499px, then add a seperate CSS file and link
+it in my HTML */
+@media screen and (max-width: 499px){
+  #restaurants-list .restaurant-img{
+    min-height: 50px;
+  }
+  #restaurants-list li{
+    min-height: 200px;
+  }
+  #restaurants-list li a{
+    font-size: 10px;
+  }
+}
 
+/* ++++++++++++++++++++++    WORK ON THIS    ++++++++++++++++++++++ */
 /* ====================== Restaurant Details ====================== */
 .inside header {
   position: fixed;
@@ -191,11 +223,11 @@ nav h1 a {
 }
 .inside #map-container {
   background: blue none repeat scroll 0 0;
-  height: 87%;
+  height: 25%;
   position: fixed;
   right: 0;
   top: 80px;
-  width: 50%;
+  width: 100%;
 }
 .inside #map {
   background-color: #ccc;
@@ -205,7 +237,7 @@ nav h1 a {
 .inside #footer {
   bottom: 0;
   position: absolute;
-  width: 50%;
+  width: 100%;
 }
 #restaurant-name {
   color: #f18200;
@@ -213,7 +245,7 @@ nav h1 a {
   font-size: 20pt;
   font-weight: 200;
   letter-spacing: 0;
-  margin: 15px 0 30px;
+  margin: 50px 0 30px;
   text-transform: uppercase;
   line-height: 1.1;
 }
@@ -238,9 +270,9 @@ nav h1 a {
 }
 #restaurant-container, #reviews-container {
   border-bottom: 1px solid #d9d9d9;
-  border-top: 1px solid #fff;
+  border-top: 200px solid #fff;
   padding: 140px 40px 30px;
-  width: 50%;
+  width: 100%;
 }
 #reviews-container {
   padding: 30px 40px 80px;
@@ -258,7 +290,7 @@ nav h1 a {
 }
 #reviews-list li {
   background-color: #fff;
-    border: 2px solid #f3f3f3;
+  border: 2px solid #f3f3f3;
   display: block;
   list-style-type: none;
   margin: 0 0 30px;
