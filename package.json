@@ -3,6 +3,10 @@
   "version": "0.1.0",
   "devDependencies": {
     "grunt": "~0.4.1",
-    "grunt-contrib-imagemin": "^2.0.1"
+    "grunt-contrib-imagemin": "^2.0.1",
+    "gulp": "^4.0.0"
+  },
+  "dependencies": {
+    "idb": "^2.1.3"
   }
 }
