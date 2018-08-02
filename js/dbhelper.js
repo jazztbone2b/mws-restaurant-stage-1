@@ -1,3 +1,35 @@
+const restaurantsURL = 'http://localhost:1337/restaurants';
+
+const dbPromise = idb.open('mws-restaurants', 2, (upgradeDb) => {
+  switch(upgradeDb.oldVersion) {
+    case 0:
+      upgradeDb.createObjectStore('restaurants', { keyPath: 'id' });
+  }
+});
+
+//get the url for the restaurants
+const putItemsInDb = () => {
+  fetch(restaurantsURL)
+  .then((response) => {
+    //return the response as json
+    return response.json();
+  }).then((restaurants) => {
+    //put the json into the restaurants store
+    dbPromise.then((db) => {
+      let tx = db.transaction('restaurants', 'readwrite');
+      let keyValStore = tx.objectStore('restaurants');
+      restaurants.forEach((restaurant) => {
+        keyValStore.put(restaurant);
+      });
+      return tx.complete;
+      }).then(() => {
+        console.log('Restaurant info added to idb');
+      }).catch((err) => {
+        console.log(`Woops... Error status: ${err}`);
+      });
+    });
+}
+
 /**
  * Common database helper functions.
  */
@@ -16,22 +48,27 @@ class DBHelper {
   /**
    * Fetch all restaurants.
    */
-  static fetchRestaurants(callback) {
+  static fetchRestaurants(callback){
     fetch(DBHelper.DATABASE_URL, { method: 'GET'})
-      .then(function(response) {
-        if (response.status !== 200) {
-          console.log('Something went wrong... Status Code: ' + response.status);
-          return;
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
         }
+      }).then((restaurants) => {
+        callback(null, restaurants);
+        putItemsInDb();
+      }).catch((err) => {
+        console.log('It appears you are offline... Getting data from indexedDB...');
         
-        response.json().then(function(restaurants) {
-          //console.log(restaurants);
-          callback(null, restaurants);
-        }).catch(function(err) {
-          console.log('Fetch error', err);
+        dbPromise.then((db) => {
+          let tx = db.transaction('restaurants', 'readonly');
+          let restStore = tx.objectStore('restaurants');
+          return restStore.getAll();
+        }).then((idbData) => {
+          callback(null, idbData);
         });
       }
-    )
+    );
   }
 
   /**
