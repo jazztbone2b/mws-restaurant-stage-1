@@ -60,6 +60,7 @@ class DBHelper {
       }).catch((err) => {
         console.log('It appears you are offline... Getting data from indexedDB...');
         
+        //get the info from the database
         dbPromise.then((db) => {
           let tx = db.transaction('restaurants', 'readonly');
           let restStore = tx.objectStore('restaurants');
