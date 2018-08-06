@@ -7,6 +7,7 @@ let urls = [
   'js/main.js',
   'js/dbhelper.js',
   'sw.js',
+  'manifest.json',
   'js/idb.js'
 ];
 
