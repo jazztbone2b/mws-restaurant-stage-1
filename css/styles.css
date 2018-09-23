@@ -284,6 +284,37 @@ nav h1 a {
   color: #666;
 }
 
+#submit-container {
+  margin-left: 10px;
+  margin-bottom: 5px;
+  border-top: 5px solid white;
+  padding: 30px 0px 30px 5px;
+}
+
+#submit-container h4 {
+  font-size: 24px;
+}
+
+#submit-text-box {
+  width: 95%;
+  height: 200px;
+  font-size: 16px;
+}
+
+#submit-button {
+  text-decoration: none;
+  border: none;
+  color: white;
+  background-color: #666;
+  font-size: 16px;
+  height: 40px;
+}
+
+#submit-button:hover {
+  cursor: pointer;
+  box-shadow: 2px 2px 2px black;
+}
+
 @media screen and (min-width: 800px){
   #restaurant-img {
     height: 700px;

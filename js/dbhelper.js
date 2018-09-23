@@ -1,34 +1,15 @@
-const restaurantsURL = 'http://localhost:1337/restaurants';
+/*const restaurantsURL = 'http://localhost:1337/restaurants';
+const reviewURL = `http://localhost:1337/reviews/`;*/
 
-const dbPromise = idb.open('mws-restaurants', 2, (upgradeDb) => {
+const dbPromise = idb.open('mws-restaurants', 5, (upgradeDb) => {
   switch(upgradeDb.oldVersion) {
     case 0:
       upgradeDb.createObjectStore('restaurants', { keyPath: 'id' });
+    case 1:
+      const reviewStore = upgradeDb.createObjectStore('reviews', { keyPath: 'id'});
+      reviewStore.createIndex('reviewIdStore', 'restaurant_id');
   }
 });
-
-//get the url for the restaurants
-const putItemsInDb = () => {
-  fetch(restaurantsURL)
-  .then((response) => {
-    //return the response as json
-    return response.json();
-  }).then((restaurants) => {
-    //put the json into the restaurants store
-    dbPromise.then((db) => {
-      let tx = db.transaction('restaurants', 'readwrite');
-      let keyValStore = tx.objectStore('restaurants');
-      restaurants.forEach((restaurant) => {
-        keyValStore.put(restaurant);
-      });
-      return tx.complete;
-      }).then(() => {
-        console.log('Restaurant info added to idb');
-      }).catch((err) => {
-        console.log(`Woops... Error status: ${err}`);
-      });
-    });
-}
 
 /**
  * Common database helper functions.
@@ -45,6 +26,11 @@ class DBHelper {
     return `http://localhost:${port}/restaurants`;
   }
 
+  static get RESTAURANT_REVIEW_URL() {
+    const port = 1337;
+    return `http://localhost:${port}/reviews`;
+  }
+
   /**
    * Fetch all restaurants.
    */
@@ -56,9 +42,19 @@ class DBHelper {
         }
       }).then((restaurants) => {
         callback(null, restaurants);
-        putItemsInDb();
+        dbPromise.then((db) => {
+          let tx = db.transaction('restaurants', 'readwrite');
+          let keyValStore = tx.objectStore('restaurants');
+          restaurants.forEach((restaurant) => {
+            keyValStore.put(restaurant);
+          });
+          return tx.complete;
+        }).then(() => {
+          console.log('Restaurant info added to idb');
+        });
       }).catch((err) => {
-        console.log('It appears you are offline... Getting data from indexedDB...');
+        console.log('It appears you are offline... Getting restaurant data from indexedDB...');
+        console.log(err);
         
         //get the info from the database
         dbPromise.then((db) => {
@@ -70,6 +66,47 @@ class DBHelper {
         });
       }
     );
+  }
+
+  /**
+   * Fetch all reveiws.
+   */
+  static fetchReviews(){
+    fetch(DBHelper.RESTAURANT_REVIEW_URL, { method: 'GET'})
+    .then((response) => {
+      if (response.ok) {
+        return response.json();
+      }
+    }).then((reviews) => {
+      dbPromise.then((db) => {
+        let tx = db.transaction('reviews', 'readwrite');
+        let keyValStore = tx.objectStore('reviews');
+        reviews.forEach((review) => {
+          keyValStore.put(review);
+        });
+        return tx.complete;
+      }).then(() => {
+        console.log('Reviews added to idb');
+      });
+    }).catch((err) => {
+      console.log('It appears you are offline... Getting review data from indexedDB...');
+      console.log(err);
+    });
+  }
+
+  /**
+   * Fetch a review by its ID.
+   */
+  static fetchReviewById(id, callback) {
+    dbPromise.then((db) => {
+      let tx = db.transaction('reviews', 'readonly');
+      let store = tx.objectStore('reviews');
+      let index = store.index('reviewIdStore');
+      return index.getAll(id);
+      }).then((idbData) => {
+        console.log(idbData);
+        callback(null, idbData);
+    });
   }
 
   /**

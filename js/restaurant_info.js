@@ -40,7 +40,7 @@ fetchRestaurantFromURL = (callback) => {
         return;
       }
       fillRestaurantHTML();
-      callback(null, restaurant)
+      callback(null, restaurant);
     });
   }
 }
@@ -68,8 +68,18 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
     fillRestaurantHoursHTML();
   }
   // fill reviews
-  fillReviewsHTML();
+  DBHelper.fetchReviews();
+  DBHelper.fetchReviewById(self.restaurant.id, (err, reviews) => {
+    console.log(reviews);
+    self.reviews = reviews;
+    fillReviewsHTML();
+  });
 }
+
+/*DBHelper.fetchReviewsById(self.restaurant.id).then(res => {
+  self.reviews = res;
+  fillReviewsHTML();
+});*/
 
 /**
  * Create restaurant operating hours HTML table and add it to the webpage.
@@ -96,7 +106,8 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
 /**
  * Create all reviews HTML and add them to the webpage.
  */
-fillReviewsHTML = (reviews = self.restaurant.reviews) => {
+fillReviewsHTML = (reviews = self.reviews) => {
+
   const container = document.getElementById('reviews-container');
   const title = document.createElement('h4');
   title.tabIndex = '0';
@@ -128,7 +139,8 @@ createReviewHTML = (review) => {
 
   const date = document.createElement('p');
   date.tabIndex = '0';
-  date.innerHTML = review.date;
+  let timeCreated = new Date(review.createdAt).toLocaleDateString('en-US');
+  date.innerHTML = timeCreated;
   li.appendChild(date);
 
   const rating = document.createElement('p');
