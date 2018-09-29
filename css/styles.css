@@ -181,7 +181,8 @@ nav h1 a {
   margin: 0;
   font-size: 11pt;
 }
-#restaurants-list li button {
+
+.view-details {
   background-color: #444;
   border-bottom: 3px solid #eee;
   color: #fff;
@@ -192,6 +193,28 @@ nav h1 a {
   text-align: center;
   text-decoration: none;
   text-transform: uppercase;
+}
+
+#title-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-right: 10px;
+}
+
+.favorite-button {
+  display: inline;
+  font-size: 42px;
+  float: right;
+  color: #bdbdbd;
+}
+
+.favorite-button:hover {
+  cursor: pointer;
+}
+
+.favorite-filled-in {
+  color: orange;
 }
 
 @media screen and (max-width: 499px){
@@ -289,6 +312,8 @@ nav h1 a {
   margin-bottom: 5px;
   border-top: 5px solid white;
   padding: 30px 0px 30px 5px;
+  display: flex;
+  flex-direction: column;
 }
 
 #submit-container h4 {
@@ -299,6 +324,20 @@ nav h1 a {
   width: 95%;
   height: 200px;
   font-size: 16px;
+  margin-bottom: 10px;
+}
+
+#name-box {
+  width: 200px;
+  height: 20px;
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+#rating-box {
+  width: 40px;
+  font-size: 16px;
+  margin-bottom: 10px;
 }
 
 #submit-button {
@@ -308,6 +347,7 @@ nav h1 a {
   background-color: #666;
   font-size: 16px;
   height: 40px;
+  width: 80px;
 }
 
 #submit-button:hover {

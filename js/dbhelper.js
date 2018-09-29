@@ -1,13 +1,16 @@
 /*const restaurantsURL = 'http://localhost:1337/restaurants';
 const reviewURL = `http://localhost:1337/reviews/`;*/
 
-const dbPromise = idb.open('mws-restaurants', 5, (upgradeDb) => {
+const dbPromise = idb.open('mws-restaurants', 6, (upgradeDb) => {
   switch(upgradeDb.oldVersion) {
     case 0:
       upgradeDb.createObjectStore('restaurants', { keyPath: 'id' });
     case 1:
       const reviewStore = upgradeDb.createObjectStore('reviews', { keyPath: 'id'});
       reviewStore.createIndex('reviewIdStore', 'restaurant_id');
+    case 2:
+      //new reviews will go here first before posting on the server
+      upgradeDb.createObjectStore('new-reviews', { keyPath: 'restaurant_id'});
   }
 });
 
@@ -109,6 +112,34 @@ class DBHelper {
     });
   }
 
+//fetch put to the server, if offline, cache it, then put it when back online
+  static cacheReview(id, name, rating, comment) {
+
+    console.log('clicked');
+
+    //const btn = document.querySelector('#submit-button');
+    const reviewContent = {
+      restaurant_id: id,
+      name: name,
+      createdAt: Date.now(),
+      rating: rating,
+      comments: comment
+    }
+
+    dbPromise.then((db) => {
+      let tx = db.transaction('new-reviews', 'readwrite');
+      tx.objectStore('new-reviews').put(reviewContent);
+      return tx.complete;
+    })
+    console.log(reviewContent);
+  }
+
+  static clearReviewFields(name, rating, comment) {
+    name.value = '';
+    rating.value = '';
+    comment.value = '';
+    console.log('should be clearing');
+  }
   /**
    * Fetch a restaurant by its ID.
    */
@@ -217,6 +248,66 @@ class DBHelper {
     });
   }
 
+  /**
+ * Toggle Favorite Button
+ */
+static toggleFavoriteButton(event, id) {
+  const favorite = `http://localhost:1337/restaurants/${id}/?is_favorite=true`;
+  const unFavorite = `http://localhost:1337/restaurants/${id}/?is_favorite=false`;
+
+  let elementClicked = event.target;
+  
+  if (elementClicked.style.color !== 'orange') {
+    elementClicked.style.color = 'orange';
+    elementClicked.setAttribute('id', `is-favorite-${id}`);
+    console.log(elementClicked);
+
+    //fetch the current data
+    fetch(favorite, { method: 'GET'})
+    .then((response) => {
+      if (response.ok) {
+        return response.json()
+      }
+    }).then((data) => {
+      let isFavorite = data.is_favorite;
+      isFavorite = true;
+      if(isFavorite) {
+        //post the favorited restaurant to the server
+        fetch(favorite, { 
+          method: 'POST',
+          is_favorite: true
+        });
+      console.log(`restaurant with the id of ${id} is favorited`);
+      }
+    });
+  } else {
+    elementClicked.style.color = '#bdbdbd';
+    elementClicked.removeAttribute('id', `is-favorite-${id}`);
+    //remove the favorited restaurant from the server
+    fetch(unFavorite, {
+      method: 'POST',
+      is_favorite: false
+    });
+    console.log(`restaurant with the id of ${id} is not a favorite`);
+  }
+ }
+
+ static checkForFavorite(id) {
+  const favorite = `http://localhost:1337/restaurants/${id}/?is_favorite=true`;
+  
+  fetch(favorite, { method: 'GET'})
+    .then((response) => {
+      if (response.ok) {
+        return response.json();
+      }
+    }).then((data) => {
+      if (data.is_favorite === 'true' && id === id) {
+        document.querySelector(`#fav-${id}`).style.color = 'orange';
+      } else {
+        document.querySelector(`#fav-${id}`).style.color = '#bdbdbd';
+      }
+    })
+ }
   /**
    * Restaurant page URL.
    */

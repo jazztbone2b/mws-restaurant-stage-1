@@ -166,11 +166,25 @@ createRestaurantHTML = (restaurant) => {
 
   const more = document.createElement('button');
   more.innerHTML = 'View Details';
-  more.addEventListener('click', function(){
+  more.className = 'view-details';
+  more.addEventListener('click', () => {
     const url = DBHelper.urlForRestaurant(restaurant);
     window.location = url;
   })
-  li.append(more)
+  li.append(more);
+  
+  const favIcon = document.createElement('div');
+  favIcon.setAttribute('aria-label', 'button');
+  favIcon.innerHTML = '♥';
+  favIcon.className = 'favorite-button';
+  favIcon.id = `fav-${restaurant.id}`;
+  li.append(favIcon);
+
+  favIcon.addEventListener('click', () => {
+    DBHelper.toggleFavoriteButton(event, restaurant.id)
+  });
+
+  DBHelper.checkForFavorite(restaurant.id);
 
   return li
 }

@@ -52,6 +52,14 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   const name = document.getElementById('restaurant-name');
   name.innerHTML = restaurant.name;
 
+  const favIcon = document.querySelector('.favorite-button');
+  favIcon.setAttribute('aria-label', 'button');
+  favIcon.id = `fav-${restaurant.id}`;
+  favIcon.innerHTML = '♥';
+  favIcon.addEventListener('click', () => {
+    DBHelper.toggleFavoriteButton(event, restaurant.id)
+  });
+
   const address = document.getElementById('restaurant-address');
   address.innerHTML = restaurant.address;
 
@@ -74,12 +82,31 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
     self.reviews = reviews;
     fillReviewsHTML();
   });
+  DBHelper.checkForFavorite(restaurant.id);
 }
 
-/*DBHelper.fetchReviewsById(self.restaurant.id).then(res => {
-  self.reviews = res;
-  fillReviewsHTML();
-});*/
+ 
+///////////////////////////////////////////////////////
+/**
+ * Push new review to the database
+ */
+saveNewReview = () => {
+  console.log('saveNewReview');
+  const [name, rating, comment] = [document.querySelector('#name-box'), document.querySelector('#rating-box'), document.querySelector('#submit-text-box')];
+  
+  console.log(comment);
+  
+  if (comment.value === '' || rating.value === '' || name.value === ''){
+    console.log('empty comment');
+    console.log(comment.value);
+    alert('Please fill in all fields');
+    return;
+  } else {
+  const btn = document.querySelector('#submit-button');
+  DBHelper.cacheReview(self.restaurant.id, name.value, rating.value, comment.value);
+  DBHelper.clearReviewFields(name, rating, comment);
+  }
+}
 
 /**
  * Create restaurant operating hours HTML table and add it to the webpage.

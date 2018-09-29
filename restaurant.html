@@ -3,6 +3,7 @@
 
 <head>
   <!-- Normalize.css for better cross-browser consistency -->
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#252831"/>
   <link rel="stylesheet" src="//normalize-css.googlecode.com/svn/trunk/normalize.css" />
@@ -35,7 +36,10 @@
     
     <!-- Beginning restaurant -->
     <section id="restaurant-container">
-      <h2 id="restaurant-name" tabindex="0"></h2>
+      <div id="title-container">
+        <h2 id="restaurant-name" tabindex="0"></h2>
+        <div class="favorite-button"></div>
+      </div>
       <img id="restaurant-img" tabindex="0">
     </section>
     <!-- end restaurant -->
@@ -52,8 +56,10 @@
     <!-- Submit Reviews -->
     <section id="submit-container">
       <h4>Submit a Review</h4>
-      <textarea id="submit-text-box" type="text" name="Type a Review">Type here and click the submit button to submit a review.</textarea>
-      <input id="submit-button" type="submit" value="Submit">
+      <input id="name-box" type="text" name="name" placeholder="First Name">
+      Rating between 1 and 5:<input id="rating-box" type="number" name="rating" min="1" max="5">
+      <textarea id="submit-text-box" type="text" name="comments"></textarea>
+      <input id="submit-button" type="submit" value="Submit" onclick="saveNewReview()">
     </section>
 
     <!-- Beginning reviews -->
