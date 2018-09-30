@@ -86,7 +86,6 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   });
 }
 
- 
 ///////////////////////////////////////////////////////
 /**
  * Push new review to the database

@@ -99,9 +99,14 @@ class DBHelper {
         let store = tx.objectStore('reviews');
         let index = store.index('reviewIdStore');
         return index.getAll(id);
+        }).then(() =>{
+        dbPromise.then((db) => {
+          let tx = db.transaction('new-reviews', 'readonly');
+          let store = tx.objectStore('new-reviews');
+          return store.getAll();
         }).then((idbData) => {
-          console.log(idbData);
           callback(null, idbData);
+        });
       });
     });
   }
@@ -112,7 +117,6 @@ class DBHelper {
     const reviewServerURL = `http://localhost:1337/reviews/`;
     console.log('clicked');
 
-    //const btn = document.querySelector('#submit-button');
     const reviewContent = {
       restaurant_id: id,
       name: name,
@@ -134,17 +138,10 @@ class DBHelper {
     });
     location.reload();
     console.log(reviewContent);
-    alert('You are offline. Your review will be submitted the next time you are back online');
   }
 
   static checkForCachedReviews() {
     const reviewServerURL = `http://localhost:1337/reviews/`;
-    //have this run on each page load
-    //check the database
-    //push all reviews to the server
-    //delete reviews from the database
-    
-    //need some form of callback to dynamically post review
 
     dbPromise.then((db) => {
       let tx = db.transaction('new-reviews', 'readwrite');

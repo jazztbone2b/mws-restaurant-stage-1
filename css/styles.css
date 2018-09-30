@@ -368,12 +368,3 @@ nav h1 a {
     height: 700px;
   }
 }
-
-@media screen and (min-width: 1200px){
-  body{
-    width: 1200px;
-    margin-right: auto;
-    margin-left: auto;
-    box-shadow: 5px 10px 18px #888888;
-  }
-}

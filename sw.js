@@ -8,13 +8,15 @@ let urls = [
   'js/dbhelper.js',
   'sw.js',
   'manifest.json',
-  'js/idb.js'
+  'js/idb.js',
+  'js/restaurant_info.js'
 ];
 
+//cache the skeleton so the site can be created dynamically offline
 for(let i=1; i<=10; i++) {
   urls.push(`restaurant.html?id=${i}`);
   }
-
+  
 const staticCacheName = 'mws-restaurants-v2';
 
 self.addEventListener('install', (event) => {
