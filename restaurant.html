@@ -54,13 +54,13 @@
     <!-- End map -->
 
     <!-- Submit Reviews -->
-    <section id="submit-container">
+    <form id="submit-container">
       <h4>Submit a Review</h4>
       <input id="name-box" type="text" name="name" placeholder="First Name">
       Rating between 1 and 5:<input id="rating-box" type="number" name="rating" min="1" max="5">
       <textarea id="submit-text-box" type="text" name="comments"></textarea>
-      <input id="submit-button" type="submit" value="Submit" onclick="saveNewReview()">
-    </section>
+      <input id="submit-button" type="submit" value="Submit" onclick="saveNewReview(event)">
+    </form>
 
     <!-- Beginning reviews -->
     <section id="reviews-container">

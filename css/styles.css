@@ -205,8 +205,9 @@ nav h1 a {
 .favorite-button {
   display: inline;
   font-size: 42px;
+  margin-top: 5px;
   float: right;
-  color: #bdbdbd;
+  color: #444;
 }
 
 .favorite-button:hover {
@@ -242,7 +243,7 @@ nav h1 a {
   font-size: 20pt;
   font-weight: 200;
   letter-spacing: 0;
-  margin: 0px 10px 30px;
+  margin: 20px 0px 0px 10px;
   text-transform: uppercase;
   line-height: 1.1;
 }

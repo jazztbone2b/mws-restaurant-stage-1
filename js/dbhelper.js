@@ -72,49 +72,44 @@ class DBHelper {
   }
 
   /**
-   * Fetch all reveiws.
+   * Fetch a review by its ID.
    */
-  static fetchReviews(){
-    fetch(DBHelper.RESTAURANT_REVIEW_URL, { method: 'GET'})
-    .then((response) => {
-      if (response.ok) {
+  static fetchReviewById(id, callback) {
+    const reviewByRestURL = `http://localhost:1337/reviews/?restaurant_id=${id}`;
+    fetch(reviewByRestURL, { method: 'GET'})
+      .then((response) => {
+        if (response.ok) {
         return response.json();
       }
-    }).then((reviews) => {
-      dbPromise.then((db) => {
-        let tx = db.transaction('reviews', 'readwrite');
-        let keyValStore = tx.objectStore('reviews');
-        reviews.forEach((review) => {
-          keyValStore.put(review);
+      }).then((reviews) => {
+        callback(null, reviews);
+        dbPromise.then((db) => {
+          let tx = db.transaction('reviews', 'readwrite');
+          let keyValStore = tx.objectStore('reviews');
+          reviews.forEach((review) => {
+            keyValStore.put(review);
         });
         return tx.complete;
       }).then(() => {
         console.log('Reviews added to idb');
       });
-    }).catch((err) => {
-      console.log('It appears you are offline... Getting review data from indexedDB...');
-      console.log(err);
-    });
-  }
-
-  /**
-   * Fetch a review by its ID.
-   */
-  static fetchReviewById(id, callback) {
-    dbPromise.then((db) => {
-      let tx = db.transaction('reviews', 'readonly');
-      let store = tx.objectStore('reviews');
-      let index = store.index('reviewIdStore');
-      return index.getAll(id);
-      }).then((idbData) => {
-        console.log(idbData);
-        callback(null, idbData);
+    }).catch(() => {
+      dbPromise.then((db) => {
+        let tx = db.transaction('reviews', 'readonly');
+        let store = tx.objectStore('reviews');
+        let index = store.index('reviewIdStore');
+        return index.getAll(id);
+        }).then((idbData) => {
+          console.log(idbData);
+          callback(null, idbData);
+      });
     });
   }
 
 //fetch put to the server, if offline, cache it, then put it when back online
-  static cacheReview(id, name, rating, comment) {
-
+  static cacheReview(event, id, name, rating, comment) {
+    event.preventDefault();
+    const reviewServerURL = `http://localhost:1337/reviews/`;
     console.log('clicked');
 
     //const btn = document.querySelector('#submit-button');
@@ -125,13 +120,58 @@ class DBHelper {
       rating: rating,
       comments: comment
     }
+  
+    fetch(reviewServerURL, {
+      method: 'POST',
+      body: JSON.stringify(reviewContent)
+    }).catch((err) => {
+      console.log(`Status ${err}... Saving review to idb to be pushed to the server when user is back online...`);
+      dbPromise.then((db) => {
+        let tx = db.transaction('new-reviews', 'readwrite');
+        tx.objectStore('new-reviews').put(reviewContent);
+        return tx.complete;
+      });
+    });
+    location.reload();
+    console.log(reviewContent);
+  }
+
+  static checkForCachedReviews() {
+    const reviewServerURL = `http://localhost:1337/reviews/`;
+    //have this run on each page load
+    //check the database
+    //push all reviews to the server
+    //delete reviews from the database
+    
+    //need some form of callback to dynamically post review on page
 
     dbPromise.then((db) => {
       let tx = db.transaction('new-reviews', 'readwrite');
-      tx.objectStore('new-reviews').put(reviewContent);
-      return tx.complete;
-    })
-    console.log(reviewContent);
+      let store = tx.objectStore('new-reviews');
+      return store.getAll();
+    }).then((items) => {
+      console.log(items);
+      if (items == ''){
+        console.log('There is nothing in the database to delete...');
+        return;
+      } else {
+        fetch(reviewServerURL, {
+          method: 'POST',
+          body: JSON.stringify(items)
+        }).then(() => {
+          console.log('items posted to the server successfully...');
+        }).then(() => {
+          dbPromise.then((db) => {
+            let tx = db.transaction('new-reviews', 'readwrite');
+            let store = tx.objectStore('new-reviews');
+            store.clear();
+          });
+        });
+      }
+    }).catch((err) => {
+      console.log('Whoops... ' + err);
+      return;
+    });
   }
 
   static clearReviewFields(name, rating, comment) {
@@ -281,7 +321,7 @@ static toggleFavoriteButton(event, id) {
       }
     });
   } else {
-    elementClicked.style.color = '#bdbdbd';
+    elementClicked.style.color = '#444';
     elementClicked.removeAttribute('id', `is-favorite-${id}`);
     //remove the favorited restaurant from the server
     fetch(unFavorite, {
@@ -295,6 +335,7 @@ static toggleFavoriteButton(event, id) {
  static checkForFavorite(id) {
   const favorite = `http://localhost:1337/restaurants/${id}/?is_favorite=true`;
   
+  //check for favorites and set their color
   fetch(favorite, { method: 'GET'})
     .then((response) => {
       if (response.ok) {
@@ -304,10 +345,10 @@ static toggleFavoriteButton(event, id) {
       if (data.is_favorite === 'true' && id === id) {
         document.querySelector(`#fav-${id}`).style.color = 'orange';
       } else {
-        document.querySelector(`#fav-${id}`).style.color = '#bdbdbd';
+        document.querySelector(`#fav-${id}`).style.color = '#444';
       }
-    })
- }
+    });
+  }
   /**
    * Restaurant page URL.
    */

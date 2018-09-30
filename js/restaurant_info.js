@@ -76,13 +76,19 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
     fillRestaurantHoursHTML();
   }
   // fill reviews
-  DBHelper.fetchReviews();
   DBHelper.fetchReviewById(self.restaurant.id, (err, reviews) => {
     console.log(reviews);
     self.reviews = reviews;
     fillReviewsHTML();
   });
   DBHelper.checkForFavorite(restaurant.id);
+  DBHelper.checkForCachedReviews(() => {
+    DBHelper.fetchReviewById(self.restaurant.id, (err, reviews) => {
+      console.log(reviews);
+      self.reviews = reviews;
+      fillReviewsHTML();
+    });
+  });
 }
 
  
@@ -90,7 +96,8 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
 /**
  * Push new review to the database
  */
-saveNewReview = () => {
+saveNewReview = (event, callback) => {
+  event.preventDefault()
   console.log('saveNewReview');
   const [name, rating, comment] = [document.querySelector('#name-box'), document.querySelector('#rating-box'), document.querySelector('#submit-text-box')];
   
@@ -102,9 +109,8 @@ saveNewReview = () => {
     alert('Please fill in all fields');
     return;
   } else {
-  const btn = document.querySelector('#submit-button');
-  DBHelper.cacheReview(self.restaurant.id, name.value, rating.value, comment.value);
-  DBHelper.clearReviewFields(name, rating, comment);
+    DBHelper.cacheReview(event, self.restaurant.id, name.value, rating.value, comment.value);
+    DBHelper.clearReviewFields(name, rating, comment);
   }
 }
 
