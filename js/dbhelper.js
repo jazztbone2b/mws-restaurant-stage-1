@@ -79,8 +79,8 @@ class DBHelper {
     fetch(reviewByRestURL, { method: 'GET'})
       .then((response) => {
         if (response.ok) {
-        return response.json();
-      }
+          return response.json();
+        }
       }).then((reviews) => {
         callback(null, reviews);
         dbPromise.then((db) => {
@@ -107,7 +107,7 @@ class DBHelper {
   }
 
 //fetch put to the server, if offline, cache it, then put it when back online
-  static cacheReview(event, id, name, rating, comment) {
+  static postReview(event, id, name, rating, comment) {
     event.preventDefault();
     const reviewServerURL = `http://localhost:1337/reviews/`;
     console.log('clicked');
@@ -134,6 +134,7 @@ class DBHelper {
     });
     location.reload();
     console.log(reviewContent);
+    alert('You are offline. Your review will be submitted the next time you are back online');
   }
 
   static checkForCachedReviews() {
@@ -143,7 +144,7 @@ class DBHelper {
     //push all reviews to the server
     //delete reviews from the database
     
-    //need some form of callback to dynamically post review on page
+    //need some form of callback to dynamically post review
 
     dbPromise.then((db) => {
       let tx = db.transaction('new-reviews', 'readwrite');
@@ -297,8 +298,8 @@ static toggleFavoriteButton(event, id) {
 
   let elementClicked = event.target;
   
-  if (elementClicked.style.color !== 'orange') {
-    elementClicked.style.color = 'orange';
+  if (elementClicked.style.color !== 'rgb(230, 81, 0)') {
+    elementClicked.style.color = 'rgb(230, 81, 0)';
     elementClicked.setAttribute('id', `is-favorite-${id}`);
     console.log(elementClicked);
 
@@ -343,7 +344,7 @@ static toggleFavoriteButton(event, id) {
       }
     }).then((data) => {
       if (data.is_favorite === 'true' && id === id) {
-        document.querySelector(`#fav-${id}`).style.color = 'orange';
+        document.querySelector(`#fav-${id}`).style.color = 'rgb(230, 81, 0)';
       } else {
         document.querySelector(`#fav-${id}`).style.color = '#444';
       }

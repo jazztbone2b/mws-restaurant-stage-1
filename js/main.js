@@ -70,22 +70,31 @@ fillCuisinesHTML = (cuisines = self.cuisines) => {
     option.setAttribute('label', cuisine);
     select.append(option);
   });
+  DBHelper.checkForCachedReviews();
+  updateRestaurants();
 }
 
 /**
  * Initialize Google map, called from HTML.
  */
-window.initMap = () => {
-  let loc = {
-    lat: 40.722216,
-    lng: -73.987501
-  };
-  self.map = new google.maps.Map(document.getElementById('map'), {
-    zoom: 12,
-    center: loc,
-    scrollwheel: false
-  });
-  updateRestaurants();
+switchToDynamicMap = () => {
+  let mapContainer = document.querySelector('#map-container');
+  mapContainer.addEventListener('click',
+    initMap = () => {
+      let loc = {
+          lat: 40.722216,
+          lng: -73.987501
+        };
+      console.log('initializing map');
+      self.map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 12,
+        center: loc,
+        scrollwheel: false
+      });
+      updateRestaurants();
+      mapContainer.removeEventListener('click', initMap);
+    }
+  ); 
 }
 
 /**
