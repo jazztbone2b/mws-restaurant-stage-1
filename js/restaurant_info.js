@@ -54,6 +54,7 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
 
   const favIcon = document.querySelector('.favorite-button');
   favIcon.setAttribute('aria-label', 'button');
+  favIcon.setAttribute('role', 'button');
   favIcon.id = `fav-${restaurant.id}`;
   favIcon.innerHTML = '♥';
   favIcon.addEventListener('click', () => {

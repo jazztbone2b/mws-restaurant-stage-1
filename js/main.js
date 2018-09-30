@@ -184,6 +184,7 @@ createRestaurantHTML = (restaurant) => {
   
   const favIcon = document.createElement('div');
   favIcon.setAttribute('aria-label', 'button');
+  favIcon.setAttribute('role', 'button');
   favIcon.innerHTML = '♥';
   favIcon.className = 'favorite-button';
   favIcon.id = `fav-${restaurant.id}`;
