@@ -103,7 +103,7 @@ class DBHelper {
         dbPromise.then((db) => {
           let tx = db.transaction('new-reviews', 'readonly');
           let store = tx.objectStore('new-reviews');
-          return store.getAll();
+          return store.getAll(id);
         }).then((idbData) => {
           callback(null, idbData);
         });
